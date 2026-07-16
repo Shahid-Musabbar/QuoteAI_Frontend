@@ -27,8 +27,8 @@ export default function AppLayout() {
             <Icon name="cpu" size={18} />
           </span>
           <div className="brand-text">
-            <strong>RFP Pricing</strong>
-            <span>Multi-Agent Desk</span>
+            <strong>AI CPQ</strong>
+            <span>Multi-Agent Configure,Price,Quote</span>
           </div>
         </div>
 
