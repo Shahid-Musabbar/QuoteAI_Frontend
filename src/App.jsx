@@ -1,18 +1,20 @@
 import { Route, Routes } from 'react-router-dom'
 import AppLayout from './layout/AppLayout.jsx'
 import HomePage from './pages/HomePage.jsx'
-import TryPage from './pages/TryPage.jsx'
-import MailPollingPage from './pages/MailPollingPage.jsx'
-import SimulationPage from './pages/SimulationPage.jsx'
+import SolutionsPage from './pages/SolutionsPage.jsx'
+import PricingPage from './pages/PricingPage.jsx'
+import FaqPage from './pages/FaqPage.jsx'
+import DemoPage from './pages/DemoPage.jsx'
 
 function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/try" element={<TryPage />} />
-        <Route path="/mail-polling" element={<MailPollingPage />} />
-        <Route path="/simulate" element={<SimulationPage />} />
+        <Route path="/solutions" element={<SolutionsPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/demo" element={<DemoPage />} />
       </Route>
     </Routes>
   )

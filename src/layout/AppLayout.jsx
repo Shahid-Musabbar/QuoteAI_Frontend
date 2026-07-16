@@ -1,68 +1,58 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import Icon from '../components/Icon.jsx'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Overview', icon: 'home', end: true },
-  { to: '/try', label: 'Try Now', icon: 'flask' },
-  { to: '/mail-polling', label: 'Mail Polling', icon: 'mail' },
-  { to: '/simulate', label: 'RFP Simulation', icon: 'sparkles' },
+  { to: '/', label: 'Overview', end: true },
+  { to: '/solutions', label: 'Solutions' },
+  { to: '/pricing', label: 'Pricing' },
+  { to: '/faq', label: 'FAQ' },
+  { to: '/demo', label: 'Live demo' },
 ]
 
-const PAGE_META = {
-  '/': { title: 'Overview', subtitle: 'How the RFP pricing multi-agent system works' },
-  '/try': { title: 'Try Now', subtitle: 'Run the pipeline against a live mailbox check or a simulated RFP' },
-  '/mail-polling': { title: 'Mail Polling', subtitle: 'Check the connected mailbox for new RFPs' },
-  '/simulate': { title: 'RFP Simulation', subtitle: 'Paste an RFP email and run the full pricing pipeline' },
-}
-
 export default function AppLayout() {
-  const { pathname } = useLocation()
-  const meta = PAGE_META[pathname] ?? { title: '', subtitle: '' }
+  const navigate = useNavigate()
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <span className="brand-mark">
-            <Icon name="cpu" size={18} />
-          </span>
-          <div className="brand-text">
-            <strong>QuoteAI</strong>
-            <span>Multi-Agent AI Configure,Price,Quote</span>
-          </div>
-        </div>
+    <div>
+      <nav className="nav">
+        <span className="nav-brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          QuoteAI
+        </span>
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) => (isActive ? 'active' : '')}
+          >
+            {item.label}
+          </NavLink>
+        ))}
+        <button type="button" className="btn btn-primary" onClick={() => navigate('/demo')}>
+          Run the simulation
+        </button>
+      </nav>
 
-        <nav className="sidebar-nav">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
-            >
-              <Icon name={item.icon} size={17} />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="sidebar-footer">
-          <span className="status-dot" />
-          <span>Backend expected at :8000</span>
-        </div>
-      </aside>
-
-      <div className="app-main">
-        <header className="topbar">
-          <div>
-            <h1 className="topbar-title">{meta.title}</h1>
-            <p className="topbar-subtitle">{meta.subtitle}</p>
-          </div>
-        </header>
-        <main className="page-content">
-          <Outlet />
-        </main>
+      <div className="wrap">
+        <Outlet />
       </div>
+
+      <footer className="site-footer">
+        <div className="wrap">
+          <div className="footer-brand">
+            <p>QuoteAI</p>
+            <p>Multi-agent pricing — configure, price, quote.</p>
+          </div>
+          <div className="footer-links">
+            <NavLink to="/solutions">Solutions</NavLink>
+            <NavLink to="/pricing">Pricing</NavLink>
+            <NavLink to="/faq">FAQ</NavLink>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Security</a>
+          </div>
+          <p className="footer-copy">© 2026 QuoteAI</p>
+        </div>
+      </footer>
     </div>
   )
 }

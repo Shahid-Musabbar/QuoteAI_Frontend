@@ -1,168 +1,197 @@
-import { Link } from 'react-router-dom'
-import Icon from '../components/Icon.jsx'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const PIPELINE_STEPS = [
   {
-    icon: 'mail',
+    n: '01',
     title: 'Mailbox',
-    desc: 'Inbound emails are polled from the connected inbox (currently mocked, ready for IMAP / Graph / Gmail API).',
+    desc: 'Inbound mail is polled from the connected inbox — IMAP, Microsoft Graph, or the Gmail API.',
   },
   {
-    icon: 'checkCircle',
-    title: 'RFP Classifier',
-    desc: 'An LLM call decides YES/NO — is this actually a request for proposal or quote, or just noise?',
+    n: '02',
+    title: 'RFP classifier',
+    desc: 'A single model call decides yes or no: is this actually a request for proposal, a quote, or just noise?',
   },
   {
-    icon: 'cpu',
-    title: 'Quote & Report Manager',
-    desc: 'A tool-calling agent that consults four specialist subagents, then synthesizes a final quote.',
-    highlight: true,
+    n: '03',
+    title: 'Quote manager',
+    desc: 'A tool-calling agent consults four specialist subagents, then synthesizes a final recommended quote.',
   },
   {
-    icon: 'checkCircle',
-    title: 'CFO / Sales Review',
-    desc: 'Human-in-the-loop step to approve the quote or override the recommended price before it goes out.',
+    n: '04',
+    title: 'CFO review',
+    desc: 'A human-in-the-loop step approves the quote — or overrides the price — before anything goes out.',
   },
 ]
 
-const SUBAGENTS = [
+const SPECIALISTS = [
   {
-    icon: 'server',
-    name: 'ERP Costing Agent',
     tool: 'erp_costing_agent',
-    desc: 'Looks up raw material, machinery, and labor cost for the requested product from the ERP system.',
+    title: 'ERP Costing',
+    desc: 'Looks up raw material, machinery, and labor cost for the requested product from the ERP system — the floor beneath any price.',
   },
   {
-    icon: 'target',
-    name: 'Market Analyzer Agent',
     tool: 'market_analyzer_agent',
-    desc: 'Researches competitor pricing and this customer’s past quoted prices to gauge a fair market range.',
+    title: 'Market Analyzer',
+    desc: "Researches competitor pricing and this customer's past quoted prices to gauge a fair market range.",
   },
   {
-    icon: 'cash',
-    name: 'Cash Flow Agent',
     tool: 'cash_flow_agent',
+    title: 'Cash Flow',
     desc: 'Checks current cash position and runway, then recommends payment terms the business can safely take on.',
   },
   {
-    icon: 'dollar',
-    name: 'Sales Target Agent',
     tool: 'sales_target_agent',
-    desc: 'Pulls monthly/yearly targets and minimum margin, and steers pricing to help hit them.',
+    title: 'Sales Target',
+    desc: 'Pulls monthly and yearly targets with minimum margin, and steers pricing to help hit them.',
   },
 ]
 
-const OUTPUT_FIELDS = [
-  { label: 'Price', desc: 'Recommended final unit / order price' },
-  { label: 'Rationale', desc: 'Why that price — cost, market, cash flow, and target reasoning' },
-  { label: 'Suggested payment terms', desc: 'Deposit / milestone structure sized to cash flow risk' },
-  { label: 'Risk flags', desc: 'Anything that could jeopardize margin, cash, or the deal' },
+const OUTPUTS = [
+  { n: 1, title: 'Price', desc: 'The recommended final unit or order price.' },
+  {
+    n: 2,
+    title: 'Rationale',
+    desc: 'Why that price — cost, market, cash flow, and target reasoning, in writing.',
+  },
+  {
+    n: 3,
+    title: 'Payment terms',
+    desc: 'A deposit and milestone structure sized to cash-flow risk.',
+  },
+  {
+    n: 4,
+    title: 'Risk flags',
+    desc: 'Anything that could jeopardize margin, cash, or the deal itself.',
+  },
 ]
 
-const STACK = ['LangChain', 'FastAPI', 'GPT-5 mini', 'Pydantic', 'React']
-
 export default function HomePage() {
+  const navigate = useNavigate()
+  const [sent, setSent] = useState(false)
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    setSent(true)
+  }
+
   return (
-    <div className="home">
-      <section className="hero-panel">
-        <span className="eyebrow">
-          <Icon name="sparkles" size={14} /> Multi-agent RFP pricing
-        </span>
-        <h2 className="hero-title">
-          Turn an inbound RFP email into a CFO-ready quote — automatically.
-        </h2>
-        <p className="hero-copy">
-          This is a small LangChain-powered pricing desk. A classifier decides whether an email is
-          really an RFP, then a manager agent calls four specialist subagents — ERP costing, market
-          pricing, cash flow, and sales targets — before producing a final recommended price,
-          rationale, payment terms, and risk flags for a human to review.
+    <>
+      <section className="hero">
+        <h1>
+          <span>Turn an inbound RFP email</span>
+          <span>into a CFO-ready quote.</span>
+        </h1>
+        <p>
+          QuoteAI is a multi-agent pricing desk. A classifier decides whether an email is really a
+          request for proposal; a manager agent then consults four specialists — ERP costing,
+          market pricing, cash flow, and sales targets — and returns a recommended price, its
+          rationale, payment terms, and risk flags. A human approves every quote before it leaves
+          the building.
         </p>
-        <div className="hero-actions">
-          <Link to="/try" className="btn btn-primary">
-            Try Now <Icon name="arrowRight" size={16} />
-          </Link>
-          <a
-            className="btn btn-ghost"
-            href="#pipeline"
-          >
+        <div className="row">
+          <button type="button" className="btn btn-primary" onClick={() => navigate('/demo')}>
+            Run the simulation
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={() => navigate('/solutions')}>
             See how it works
-          </a>
+          </button>
         </div>
       </section>
 
-      <section id="pipeline" className="section">
-        <h3 className="section-title">Pipeline</h3>
-        <div className="pipeline">
-          {PIPELINE_STEPS.map((step, i) => (
-            <div className="pipeline-step-wrap" key={step.title}>
-              <div className={`pipeline-step${step.highlight ? ' highlight' : ''}`}>
-                <span className="pipeline-icon">
-                  <Icon name={step.icon} size={18} />
-                </span>
-                <h4>{step.title}</h4>
-                <p>{step.desc}</p>
-              </div>
-              {i < PIPELINE_STEPS.length - 1 && (
-                <span className="pipeline-arrow">
-                  <Icon name="arrowRight" size={16} />
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="section">
-        <h3 className="section-title">Inside the manager agent — four subagent tools</h3>
-        <div className="card-grid">
-          {SUBAGENTS.map((agent) => (
-            <div className="card subagent-card" key={agent.tool}>
-              <span className="card-icon">
-                <Icon name={agent.icon} size={18} />
-              </span>
-              <h4>{agent.name}</h4>
-              <p>{agent.desc}</p>
-              <code className="tool-tag">{agent.tool}</code>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="section">
-        <h3 className="section-title">What you get back</h3>
-        <div className="output-preview">
-          {OUTPUT_FIELDS.map((field, i) => (
-            <div className="output-row" key={field.label}>
-              <span className="output-index">{i + 1}</span>
-              <div>
-                <strong>{field.label}</strong>
-                <p>{field.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="section stack-section">
-        <h3 className="section-title">Built with</h3>
-        <div className="stack-row">
-          {STACK.map((item) => (
-            <span className="stack-badge" key={item}>
-              {item}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section className="cta-panel">
+      <div className="stats" aria-label="QuoteAI, by the numbers">
         <div>
-          <h3>Ready to see it price a real RFP?</h3>
-          <p>Run a live mailbox check, or paste in an email and watch the agents work.</p>
+          <p className="stat-num gilt">4</p>
+          <p className="stat-label">Specialist agents per quote</p>
         </div>
-        <Link to="/try" className="btn btn-primary">
-          Try Now <Icon name="arrowRight" size={16} />
-        </Link>
+        <div>
+          <p className="stat-num">2 min</p>
+          <p className="stat-label">From inbox to draft quote</p>
+        </div>
+        <div>
+          <p className="stat-num">100%</p>
+          <p className="stat-label">Quotes reviewed by a human</p>
+        </div>
+        <div>
+          <p className="stat-num">1</p>
+          <p className="stat-label">Inbox to connect</p>
+        </div>
+      </div>
+
+      <section className="pipeline-section">
+        <span className="kicker">The pipeline</span>
+        <h2 className="section-title">Four steps, one desk</h2>
+        <div className="pipeline-grid">
+          {PIPELINE_STEPS.map((step) => (
+            <div className="pipeline-step" key={step.n}>
+              <p className="num">{step.n}</p>
+              <h3>{step.title}</h3>
+              <p>{step.desc}</p>
+            </div>
+          ))}
+        </div>
       </section>
-    </div>
+
+      <section className="specialists-section">
+        <span className="kicker">Inside the manager</span>
+        <h2 className="section-title">Four specialists, one recommendation</h2>
+        <div className="specialists-grid">
+          {SPECIALISTS.map((agent) => (
+            <div className="card specialist-card" key={agent.tool}>
+              <p className="card-kicker">{agent.tool}</p>
+              <h3 className="card-title">{agent.title}</h3>
+              <p className="card-body">{agent.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className="rule" />
+
+      <section className="output-section">
+        <span className="kicker">What you get back</span>
+        <div className="output-list">
+          {OUTPUTS.map((field) => (
+            <div className="output-row" key={field.n}>
+              <span className="output-index">{field.n}</span>
+              <h3>{field.title}</h3>
+              <p>{field.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <figure className="quote-section">
+        <blockquote>
+          &ldquo;The quote used to take my sales lead a day and me an argument. Now it takes two
+          minutes and a signature. The price is usually the one I would have fought for.&rdquo;
+        </blockquote>
+        <figcaption>— R. Menon, CFO, precision components manufacturer</figcaption>
+      </figure>
+
+      <hr className="rule" />
+
+      <div className="accent-panel contact-panel" id="contact">
+        <div>
+          <h3>Book a demo</h3>
+          <p>
+            Thirty minutes with a real RFP from your inbox. We connect the mailbox, run the
+            pipeline, and you watch the agents argue about your price.
+          </p>
+        </div>
+        {!sent ? (
+          <form className="contact-form" onSubmit={handleSubmit}>
+            <input className="input" type="text" placeholder="Your name" aria-label="Your name" required />
+            <input className="input" type="email" placeholder="Work email" aria-label="Work email" required />
+            <input className="input" type="text" placeholder="Company" aria-label="Company" required />
+            <button type="submit" className="btn btn-primary">
+              Request a demo
+            </button>
+          </form>
+        ) : (
+          <p className="contact-sent">Thank you — we will write back within one business day.</p>
+        )}
+      </div>
+    </>
   )
 }
