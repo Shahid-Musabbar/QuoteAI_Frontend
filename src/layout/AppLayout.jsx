@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth.jsx'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Overview', end: true },
@@ -10,6 +11,7 @@ const NAV_ITEMS = [
 
 export default function AppLayout() {
   const navigate = useNavigate()
+  const { user, loading, login, logout } = useAuth()
 
   return (
     <div>
@@ -27,6 +29,28 @@ export default function AppLayout() {
             {item.label}
           </NavLink>
         ))}
+        {!loading && (
+          user ? (
+            <div className="nav-user" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {user.picture && (
+                <img
+                  src={user.picture}
+                  alt=""
+                  className="nav-avatar"
+                  style={{ width: '28px', height: '28px', borderRadius: '50%' }}
+                />
+              )}
+              <span>{user.name || user.email}</span>
+              <button type="button" className="btn btn-ghost" onClick={logout}>
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button type="button" className="btn btn-ghost" onClick={login}>
+              Sign in with Google
+            </button>
+          )
+        )}
         <button type="button" className="btn btn-primary" onClick={() => navigate('/demo')}>
           Run the simulation
         </button>

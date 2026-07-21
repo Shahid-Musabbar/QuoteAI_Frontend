@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { checkMailbox, runRfpSimulation } from '../api.js'
+import { useEffect, useState } from 'react'
+import { listGmailMessages, processGmailMessage, runRfpSimulation } from '../api.js'
+import { useAuth } from '../auth.jsx'
 
 const SAMPLE_EMAIL = `Hi team, we are Acme Manufacturing and we'd like to request a formal quote/proposal for 5000 units of steel brackets for our upcoming assembly line project. Please send pricing and terms. Thanks!`
 
@@ -32,11 +33,13 @@ function formatPrice(price) {
 
 export default function DemoPage() {
   const [tab, setTab] = useState('sim')
+  const { user, loading: authLoading, login } = useAuth()
 
-  // mail polling state
-  const [polling, setPolling] = useState(false)
-  const [pollResult, setPollResult] = useState(null)
-  const [pollError, setPollError] = useState('')
+  // gmail inbox state
+  const [gmailLoading, setGmailLoading] = useState(false)
+  const [gmailMessages, setGmailMessages] = useState(null)
+  const [gmailError, setGmailError] = useState('')
+  const [processingId, setProcessingId] = useState(null)
 
   // simulation state
   const [rfp, setRfp] = useState('')
@@ -46,18 +49,44 @@ export default function DemoPage() {
   const [approved, setApproved] = useState(false)
   const [showAgentDetail, setShowAgentDetail] = useState(false)
 
-  async function runPoll() {
-    if (polling) return
-    setPolling(true)
-    setPollError('')
+  useEffect(() => {
+    if (!user) {
+      setGmailMessages(null)
+      setGmailError('')
+      setProcessingId(null)
+    }
+  }, [user])
+
+  async function loadGmailMessages() {
+    if (gmailLoading) return
+    setGmailLoading(true)
+    setGmailError('')
     try {
-      const data = await checkMailbox()
-      setPollResult(data)
+      const data = await listGmailMessages()
+      setGmailMessages(data.messages)
     } catch (err) {
-      setPollError(err.message)
-      setPollResult(null)
+      setGmailError(err.message)
+      setGmailMessages(null)
     } finally {
-      setPolling(false)
+      setGmailLoading(false)
+    }
+  }
+
+  async function pickGmailMessage(messageId) {
+    if (processingId) return
+    setProcessingId(messageId)
+    setGmailError('')
+    try {
+      const data = await processGmailMessage(messageId)
+      setSimResult(data)
+      setSimStatus(data.status === 'ignored' ? 'ignored' : 'quoted')
+      setApproved(false)
+      setShowAgentDetail(false)
+      setTab('sim')
+    } catch (err) {
+      setGmailError(err.message)
+    } finally {
+      setProcessingId(null)
     }
   }
 
@@ -122,43 +151,55 @@ export default function DemoPage() {
         <div className="demo-body mail">
           <div className="card">
             <p className="card-kicker">Mail polling</p>
-            <h3 className="card-title">Check the connected mailbox for new RFPs</h3>
+            <h3 className="card-title">Check your Gmail inbox for new RFPs</h3>
             <p className="card-body">
-              Calls <code>POST /start</code> on the backend. Polls the inbox, runs the classifier
-              against each new message, and routes anything that looks like an RFP into the
-              pricing workflow.
+              {user
+                ? <>Calls <code>GET /gmail/messages</code> on the backend using your connected Google account, then lets you run any message through the pricing workflow.</>
+                : <>Sign in with Google to grant read-only Gmail access, then pull recent inbox messages straight into the pricing workflow.</>}
             </p>
             <div className="mail-note">
-              <button type="button" className="btn btn-primary" onClick={runPoll} disabled={polling}>
-                {polling ? 'Checking mailbox…' : pollResult ? 'Check again' : 'Check mailbox now'}
-              </button>
+              {!authLoading && (
+                user ? (
+                  <button type="button" className="btn btn-primary" onClick={loadGmailMessages} disabled={gmailLoading}>
+                    {gmailLoading ? 'Checking inbox…' : gmailMessages ? 'Check again' : 'Check my inbox'}
+                  </button>
+                ) : (
+                  <button type="button" className="btn btn-primary" onClick={login}>
+                    Sign in with Google
+                  </button>
+                )
+              )}
             </div>
           </div>
 
-          {pollError && (
+          {gmailError && (
             <div className="alert alert-danger" style={{ marginTop: '24px' }}>
-              <span>{pollError}</span>
+              <span>{gmailError}</span>
             </div>
           )}
 
-          {pollResult && (
+          {gmailMessages && (
             <div className="mail-result">
-              <div className="mail-result-row">
-                <span className="label">Status</span>
-                <span className="badge badge-neutral">{pollResult.status}</span>
-              </div>
-              <div className="mail-result-row">
-                <span className="label">New mail found</span>
-                <span className={`badge ${pollResult.new_mail_found ? 'badge-success' : 'badge-warning'}`}>
-                  {pollResult.new_mail_found ? 'Yes' : 'No'}
-                </span>
-              </div>
-              <div className="mail-result-row">
-                <span className="label">Message</span>
-                <span>{pollResult.message}</span>
-              </div>
+              {gmailMessages.length === 0 && <p>No messages found in the inbox.</p>}
+              {gmailMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className="mail-result-row"
+                  style={{ cursor: processingId ? 'default' : 'pointer', alignItems: 'flex-start' }}
+                  onClick={() => pickGmailMessage(msg.id)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span className="label">{msg.subject}</span>
+                    <span style={{ fontSize: '13px' }}>{msg.from} · {msg.date}</span>
+                    <span style={{ fontSize: '13.5px' }}>{msg.snippet}</span>
+                  </div>
+                  <span className="badge badge-neutral">
+                    {processingId === msg.id ? 'Processing…' : 'Run pricing'}
+                  </span>
+                </div>
+              ))}
               <p style={{ fontSize: '15.5px', lineHeight: '26px', margin: '20px 0 0', color: 'color-mix(in srgb, var(--color-text) 78%, transparent)' }}>
-                Want to price a specific RFP instead? <a onClick={() => setTab('sim')} style={{ cursor: 'pointer' }}>Open it in the simulation</a>.
+                Want to price a pasted email instead? <a onClick={() => setTab('sim')} style={{ cursor: 'pointer' }}>Open it in the simulation</a>.
               </p>
             </div>
           )}
