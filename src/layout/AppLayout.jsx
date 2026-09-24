@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth.jsx'
 
 const NAV_ITEMS = [
@@ -11,7 +11,12 @@ const NAV_ITEMS = [
 
 export default function AppLayout() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, loading, login, logout } = useAuth()
+  // The conversation workspace is a full-bleed app view (sidebar flush to the
+  // viewport edge), not a marketing page, so it skips the centered `.wrap`
+  // container and footer that every other route gets.
+  const isWorkspace = location.pathname.startsWith('/demo')
 
   return (
     <div>
@@ -56,27 +61,33 @@ export default function AppLayout() {
         </button>
       </nav>
 
-      <div className="wrap">
+      {isWorkspace ? (
         <Outlet />
-      </div>
+      ) : (
+        <>
+          <div className="wrap">
+            <Outlet />
+          </div>
 
-      <footer className="site-footer">
-        <div className="wrap">
-          <div className="footer-brand">
-            <p>QuoteAI</p>
-            <p>Multi-agent pricing — configure, price, quote.</p>
-          </div>
-          <div className="footer-links">
-            <NavLink to="/solutions">Solutions</NavLink>
-            <NavLink to="/pricing">Pricing</NavLink>
-            <NavLink to="/faq">FAQ</NavLink>
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Security</a>
-          </div>
-          <p className="footer-copy">© 2026 QuoteAI</p>
-        </div>
-      </footer>
+          <footer className="site-footer">
+            <div className="wrap">
+              <div className="footer-brand">
+                <p>QuoteAI</p>
+                <p>Multi-agent pricing — configure, price, quote.</p>
+              </div>
+              <div className="footer-links">
+                <NavLink to="/solutions">Solutions</NavLink>
+                <NavLink to="/pricing">Pricing</NavLink>
+                <NavLink to="/faq">FAQ</NavLink>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Security</a>
+              </div>
+              <p className="footer-copy">© 2026 QuoteAI</p>
+            </div>
+          </footer>
+        </>
+      )}
     </div>
   )
 }
