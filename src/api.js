@@ -60,4 +60,8 @@ export function createConversationFromGmail(gmailMessageId) {
   return authedPostJSON('/conversations', { source: 'gmail', gmail_message_id: gmailMessageId })
 }
 
+export function createTurn(conversationId, instructionText) {
+  return authedPostJSON(`/conversations/${conversationId}/turns`, { instruction_text: instructionText })
+}
+
 export { API_BASE }

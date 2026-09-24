@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { getConversation } from '../api.js'
+import ChatComposer from '../components/ChatComposer.jsx'
 import StepTimeline, { StepTypeLegend } from '../components/StepTimeline.jsx'
 
 function formatPrice(price) {
@@ -21,41 +22,45 @@ export default function ConversationView() {
 
   return (
     <div className="conversation-view">
-      <div className="conversation-view-header">
-        <div>
-          <p className="card-kicker">Quote AI</p>
-          <h1 className="conversation-view-title">{conversation.title}</h1>
+      <div className="conversation-view-body">
+        <div className="conversation-view-header">
+          <div>
+            <p className="card-kicker">Quote AI</p>
+            <h1 className="conversation-view-title">{conversation.title}</h1>
+          </div>
+          {conversation.status === 'ignored' && <span className="badge badge-neutral">Ignored — not an RFQ</span>}
         </div>
-        {conversation.status === 'ignored' && <span className="badge badge-neutral">Ignored — not an RFQ</span>}
+
+        <StepTypeLegend />
+
+        {conversation.turns.map((turn) => (
+          <div key={turn.id} className="conversation-turn">
+            {turn.turn_index > 0 && turn.instruction_text && (
+              <div className="conversation-turn-instruction">{turn.instruction_text}</div>
+            )}
+
+            <StepTimeline steps={turn.steps} />
+
+            {turn.artifacts.map((artifact) => (
+              <div className="card quote-result" key={artifact.id}>
+                <p className="card-kicker">
+                  {artifact.kind === 'quote_draft' ? 'Recommended quote · awaiting review' : artifact.kind}
+                </p>
+                <p className="price">{formatPrice(artifact.recommended_price) ?? '—'}</p>
+                <p>{artifact.rationale || 'No rationale returned.'}</p>
+                <p className="terms">
+                  <span>Terms</span> — {artifact.payment_terms || 'No payment terms returned.'}
+                </p>
+                <p className="terms">
+                  <span>Risk flags</span> — {artifact.risk_flags || 'None flagged.'}
+                </p>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
 
-      <StepTypeLegend />
-
-      {conversation.turns.map((turn) => (
-        <div key={turn.id} className="conversation-turn">
-          {turn.turn_index > 0 && turn.instruction_text && (
-            <div className="conversation-turn-instruction">{turn.instruction_text}</div>
-          )}
-
-          <StepTimeline steps={turn.steps} />
-
-          {turn.artifacts.map((artifact) => (
-            <div className="card quote-result" key={artifact.id}>
-              <p className="card-kicker">
-                {artifact.kind === 'quote_draft' ? 'Recommended quote · awaiting review' : artifact.kind}
-              </p>
-              <p className="price">{formatPrice(artifact.recommended_price) ?? '—'}</p>
-              <p>{artifact.rationale || 'No rationale returned.'}</p>
-              <p className="terms">
-                <span>Terms</span> — {artifact.payment_terms || 'No payment terms returned.'}
-              </p>
-              <p className="terms">
-                <span>Risk flags</span> — {artifact.risk_flags || 'None flagged.'}
-              </p>
-            </div>
-          ))}
-        </div>
-      ))}
+      <ChatComposer conversationId={conversationId} />
     </div>
   )
 }
