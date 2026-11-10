@@ -1,5 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-
+const API_BASE = import.meta.env.BACKEND_API_BASE_URL || 'https://quoteai-production-7eae2516.up.railway.app'
 // All product endpoints require a signed-in session, so every call here carries
 // the session cookie.
 async function requestWithCredentials(path, options) {
@@ -62,6 +61,38 @@ export function createConversationFromGmail(gmailMessageId) {
 
 export function createTurn(conversationId, instructionText) {
   return authedPostJSON(`/conversations/${conversationId}/turns`, { instruction_text: instructionText })
+}
+
+export function listCatalog() {
+  return getJSON('/catalog')
+}
+
+export async function uploadCatalog(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return requestWithCredentials('/catalog/upload', { method: 'POST', body: formData })
+}
+
+export function deleteCatalogEntry(entryId) {
+  return requestWithCredentials(`/catalog/${entryId}`, { method: 'DELETE' })
+}
+
+export function listDataSources() {
+  return getJSON('/data-sources')
+}
+
+export function uploadDataFile(source, file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return requestWithCredentials(`/data-sources/${source}/files`, { method: 'POST', body: formData })
+}
+
+export function getDataDictionary(source, fileId) {
+  return getJSON(`/data-sources/${source}/files/${fileId}/dictionary`)
+}
+
+export function deleteDataFile(source, fileId) {
+  return requestWithCredentials(`/data-sources/${source}/files/${fileId}`, { method: 'DELETE' })
 }
 
 export { API_BASE }

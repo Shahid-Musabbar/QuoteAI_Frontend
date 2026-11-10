@@ -1249,3 +1249,13 @@ textarea.input {
     overflow: visible;
   }
 }
+
+.proposal-draft {
+  margin-top: 14px;
+}
+
+.proposal-draft summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}

@@ -9,6 +9,11 @@ const STEP_TYPE_LABELS = {
 const AGENT_LABELS = {
   classifier: 'RFP classifier',
   extractor: 'Info extractor',
+  erp_data: 'ERP data agent',
+  market_data: 'Market pricing data agent',
+  history_data: 'Pricing history data agent',
+  cash_flow: 'Cash flow agent',
+  sales_target: 'Sales target agent',
   erp: 'ERP costing agent',
   analyzer: 'Market analyzer agent',
   cashflow: 'Cash flow agent',

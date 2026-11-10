@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/solutions', label: 'Solutions' },
   { to: '/pricing', label: 'Pricing' },
   { to: '/faq', label: 'FAQ' },
+  { to: '/data', label: 'Data sources' },
   { to: '/demo', label: 'Live demo' },
 ]
 

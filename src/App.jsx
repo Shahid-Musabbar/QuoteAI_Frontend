@@ -7,6 +7,7 @@ import PricingPage from './pages/PricingPage.jsx'
 import FaqPage from './pages/FaqPage.jsx'
 import NewConversationPrompt from './pages/NewConversationPrompt.jsx'
 import ConversationView from './pages/ConversationView.jsx'
+import DataSourcesPage from './pages/DataSourcesPage.jsx'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/solutions" element={<SolutionsPage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/faq" element={<FaqPage />} />
+        <Route path="/data" element={<DataSourcesPage />} />
         <Route path="/demo" element={<ConversationLayout />}>
           <Route index element={<NewConversationPrompt />} />
           <Route path=":conversationId" element={<ConversationView />} />

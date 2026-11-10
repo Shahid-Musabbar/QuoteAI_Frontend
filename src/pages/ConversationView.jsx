@@ -54,6 +54,12 @@ export default function ConversationView() {
                 <p className="terms">
                   <span>Risk flags</span> — {artifact.risk_flags || 'None flagged.'}
                 </p>
+                {artifact.content_md && (
+                  <details className="proposal-draft">
+                    <summary>Proposal draft{artifact.is_current ? '' : ' (superseded)'}</summary>
+                    <pre className="step-item-output">{artifact.content_md}</pre>
+                  </details>
+                )}
               </div>
             ))}
           </div>
