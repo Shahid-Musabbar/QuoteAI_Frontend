@@ -138,7 +138,7 @@ export default function NewConversationPrompt() {
                 aria-label="RFQ email content"
                 disabled={pasteMutation.isPending}
               />
-              <div style={{ marginTop: '16px' }}>
+              <div style={{ marginTop: '28px' }}>
                 <button type="submit" className="btn btn-primary btn-block" disabled={pasteMutation.isPending}>
                   {pasteMutation.isPending
                     ? 'Agents working…'

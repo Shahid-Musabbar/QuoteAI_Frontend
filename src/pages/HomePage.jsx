@@ -77,10 +77,11 @@ export default function HomePage() {
 
   return (
     <>
+      <div className="hero-stage">
       <section className="hero">
         <h1>
-          <span>Turn an inbound RFP email</span>
-          <span>into a CFO-ready quote.</span>
+          <span>Turn an inbound <mark className="ul">RFP email</mark></span>
+          <span>into a <mark className="hl">CFO-ready quote.</mark></span>
         </h1>
         <p>
           QuoteAI is a multi-agent pricing desk. A classifier decides whether an email is really a
@@ -98,6 +99,7 @@ export default function HomePage() {
           </button>
         </div>
       </section>
+      </div>
 
       <div className="stats" aria-label="QuoteAI, by the numbers">
         <div>
@@ -105,7 +107,7 @@ export default function HomePage() {
           <p className="stat-label">Specialist agents per quote</p>
         </div>
         <div>
-          <p className="stat-num">2 min</p>
+          <p className="stat-num">5 min</p>
           <p className="stat-label">From inbox to draft quote</p>
         </div>
         <div>

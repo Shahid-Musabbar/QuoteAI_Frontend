@@ -123,6 +123,15 @@ function SourceCard({ source }) {
   )
 }
 
+const INTEGRATIONS = [
+  { name: 'SAP', file: 'sap' },
+  { name: 'Microsoft Dynamics 365', file: 'dynamics365' },
+  { name: 'Excel', file: 'excel' },
+  { name: 'Teams', file: 'teams' },
+  { name: 'Gmail', file: 'gmail' },
+  { name: 'Outlook', file: 'outlook' },
+]
+
 export default function DataSourcesPage() {
   const { user, loading, login } = useAuth()
 
@@ -140,9 +149,26 @@ export default function DataSourcesPage() {
       <div className="demo-hero">
         <span className="kicker">Data sources</span>
         <h1 className="page-title">Sign in to manage your data.</h1>
-        <button type="button" className="btn btn-primary" onClick={login}>
+        <div className="signin-actions">
+          <button type="button" className="btn btn-primary" onClick={login}>
           Sign in with Google
         </button>
+        </div>
+        <div className="integrations-note">
+          <span className="integrations-label">Integrations in process</span>
+          <ul className="integrations-list">
+            {INTEGRATIONS.map((item) => (
+              <li key={item.file} className="integration-chip">
+                <span
+                  className="integration-logo"
+                  style={{ '--logo': `url(/integrations/${item.file}.svg)` }}
+                  aria-hidden="true"
+                />
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     )
   }

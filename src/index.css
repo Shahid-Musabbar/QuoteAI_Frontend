@@ -1,21 +1,29 @@
+/* Graphite theme: neutral surfaces with a lime accent. Light is the base;
+   dark applies via the OS preference or an explicit data-theme="dark". */
 :root {
-  --color-bg: #ffffff;
-  --color-text: #201f1d;
-  --color-divider: color-mix(in srgb, #201f1d 16%, transparent);
+  --color-bg: #f4f4ef;
+  --color-surface: #ffffff;
+  --color-surface-2: #ecece6;
+  --color-text: #141412;
+  --color-muted: #5d5d56;
+  --color-divider: color-mix(in srgb, #141412 12%, transparent);
 
-  --color-accent: #b68235;
-  --color-accent-100: #fff3e4;
-  --color-accent-200: #ffe3bf;
-  --color-accent-300: #facb8d;
-  --color-accent-400: #e1ad66;
-  --color-accent-500: #c28d41;
-  --color-accent-600: #a06f24;
-  --color-accent-700: #7d5411;
-  --color-accent-800: #5a3b0a;
-  --color-accent-900: #3a270d;
+  --color-accent: #bfeb2a;
+  --color-accent-100: #f1f9d6;
+  --color-accent-200: #e1f2a8;
+  --color-accent-300: #cfe87a;
+  --color-accent-400: #b5da3c;
+  --color-accent-500: #b8e62a;
+  --color-accent-600: #aedb1e;
+  --color-accent-700: #4d6b0a;
+  --color-accent-800: #3c5508;
+  --color-accent-900: #2c4005;
+  --color-on-accent: #11140a;
 
-  --font-heading: 'Cormorant Garamond', system-ui, serif;
-  --font-body: 'Lora', system-ui, serif;
+  --font-heading: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  --font-brand: 'Cormorant Garamond', system-ui, serif;
 
   --space-1: 4.6px;
   --space-2: 9.2px;
@@ -24,16 +32,18 @@
   --space-6: 27.6px;
   --space-8: 36.8px;
 
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 7px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
 
-  --success: #3f7d5a;
-  --success-bg: #e7f2ec;
-  --warning: #8a5a12;
-  --warning-bg: #fbeedd;
-  --danger: #a13d3d;
-  --danger-bg: #f8e9e9;
+  --success: #15803d;
+  --success-bg: #dff3e6;
+  --warning: #9a5b06;
+  --warning-bg: #fbecd0;
+  --danger: #be123c;
+  --danger-bg: #fbe1e6;
+
+  --shadow-sm: 0 1px 2px rgba(20, 20, 18, 0.05), 0 4px 14px rgba(20, 20, 18, 0.06);
 
   font: 16px/1.6 var(--font-body);
   color-scheme: light;
@@ -45,6 +55,68 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: #0a0a0a;
+    --color-surface: #141414;
+    --color-surface-2: #1d1d1d;
+    --color-text: #f2f2ee;
+    --color-muted: #a3a39c;
+    --color-divider: color-mix(in srgb, #f2f2ee 12%, transparent);
+
+    --color-accent: #c8f23a;
+    --color-accent-100: rgba(200, 242, 58, 0.1);
+    --color-accent-200: rgba(200, 242, 58, 0.22);
+    --color-accent-300: rgba(200, 242, 58, 0.35);
+    --color-accent-400: #a8cf2c;
+    --color-accent-500: #c4ec36;
+    --color-accent-600: #d6f65e;
+    --color-accent-700: #c8f23a;
+    --color-accent-800: #d6f666;
+    --color-accent-900: #e4fa8c;
+
+    --success: #4ade80;
+    --success-bg: rgba(74, 222, 128, 0.12);
+    --warning: #f5b83d;
+    --warning-bg: rgba(245, 184, 61, 0.12);
+    --danger: #fb7185;
+    --danger-bg: rgba(251, 113, 133, 0.12);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #0a0a0a;
+  --color-surface: #141414;
+  --color-surface-2: #1d1d1d;
+  --color-text: #f2f2ee;
+  --color-muted: #a3a39c;
+  --color-divider: color-mix(in srgb, #f2f2ee 12%, transparent);
+
+  --color-accent: #c8f23a;
+  --color-accent-100: rgba(200, 242, 58, 0.1);
+  --color-accent-200: rgba(200, 242, 58, 0.22);
+  --color-accent-300: rgba(200, 242, 58, 0.35);
+  --color-accent-400: #a8cf2c;
+  --color-accent-500: #c4ec36;
+  --color-accent-600: #d6f65e;
+  --color-accent-700: #c8f23a;
+  --color-accent-800: #d6f666;
+  --color-accent-900: #e4fa8c;
+
+  --success: #4ade80;
+  --success-bg: rgba(74, 222, 128, 0.12);
+  --warning: #f5b83d;
+  --warning-bg: rgba(245, 184, 61, 0.12);
+  --danger: #fb7185;
+  --danger-bg: rgba(251, 113, 133, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -53,6 +125,7 @@ body {
   margin: 0;
   min-height: 100svh;
   background: var(--color-bg);
+  color: var(--color-text);
   text-wrap: pretty;
 }
 
@@ -62,10 +135,10 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-heading);
-  font-weight: 400;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -78,7 +151,7 @@ a {
 }
 
 a:hover {
-  color: var(--color-accent-600);
+  color: var(--color-text);
 }
 
 button {
@@ -90,5 +163,10 @@ textarea, input {
 }
 
 code, pre {
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
 }

@@ -7,7 +7,7 @@ export default function ConversationLayout() {
 
   if (!loading && !user) {
     return (
-      <div className="wrap">
+      <div className="wrap page-main">
         <div className="demo-hero">
           <span className="kicker">Live workspace</span>
           <h1 className="page-title">Sign in to open your quotes.</h1>
@@ -15,7 +15,7 @@ export default function ConversationLayout() {
             RFQ conversations are tied to your Google account so your quote history and Gmail
             drafts stay together.
           </p>
-          <button type="button" className="btn btn-primary" onClick={login}>
+          <button type="button" className="btn btn-primary signin-btn" onClick={login}>
             Sign in with Google
           </button>
         </div>
